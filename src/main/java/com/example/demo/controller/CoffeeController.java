@@ -1,6 +1,8 @@
 package com.example.demo.controller;
 
 import com.example.demo.model.Coffee;
+import com.example.demo.model.Droid;
+import com.example.demo.model.Greeting;
 import com.example.demo.repository.CoffeeRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -14,25 +16,33 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class CoffeeController {
     private final CoffeeRepository repository;
+    private final Greeting greeting;
 
-    @Value("${greeting-name: Mirage}")
+    private final Droid droid;
+
+    @Value("${greeting-name:}")
     private String name;
 
-    @Value("${greeting-coffee: ${greeting-name}}")
+    @Value("${greeting-coffee:}")
     private String coffee;
 
     @GetMapping("/cof")
     String getName() {
-        return name;
+        return greeting.getName();
     }
 
     @GetMapping("/coff")
-    String getNameAndCoffee() {
-        return coffee;
+    public String getNameAndCoffee() {
+        return greeting.getCoffee();
+    }
+
+    @GetMapping("/droid")
+    public Droid getDroid() {
+        return droid;
     }
 
     @GetMapping("/coffee")
-    Iterable<Coffee> getCoffee() {
+    public Iterable<Coffee> getCoffee() {
         return repository.findAll();
     }
 
