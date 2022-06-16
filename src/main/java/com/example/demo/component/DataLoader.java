@@ -11,9 +11,7 @@ import java.util.List;
 @Component
 @RequiredArgsConstructor
 public class DataLoader {
-
     private final CoffeeRepository coffeeRepository;
-
     @PostConstruct
     private void loadData() {
         coffeeRepository.saveAll(List.of(

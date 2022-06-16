@@ -3,20 +3,33 @@ package com.example.demo.controller;
 import com.example.demo.model.Coffee;
 import com.example.demo.repository.CoffeeRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 
 @RestController
 @RequiredArgsConstructor
 public class CoffeeController {
-
     private final CoffeeRepository repository;
 
+    @Value("${greeting-name: Mirage}")
+    private String name;
+
+    @Value("${greeting-coffee: ${greeting-name}}")
+    private String coffee;
+
+    @GetMapping("/cof")
+    String getName() {
+        return name;
+    }
+
+    @GetMapping("/coff")
+    String getNameAndCoffee() {
+        return coffee;
+    }
 
     @GetMapping("/coffee")
     Iterable<Coffee> getCoffee() {
@@ -24,13 +37,18 @@ public class CoffeeController {
     }
 
     @GetMapping("/coffee/{id}")
-    public Optional<Coffee> getCoffeeById(@PathVariable Long id) {
-        return repository.findById(id);
+    public ResponseEntity<Optional<Coffee>> getCoffeeById(@PathVariable Long id) {
+        Optional<Coffee> cof = repository.findById(id);
+        return cof.isPresent()
+                ? new ResponseEntity<>(cof, HttpStatus.OK)
+                : new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
+
     @PostMapping("/coffee")
-    public Coffee postCoffee(@RequestBody Coffee coffee) {
-        return repository.save(coffee);
+    public ResponseEntity<HttpStatus> postCoffee(@RequestBody Coffee coffee) {
+        repository.save(coffee);
+        return ResponseEntity.ok().body(HttpStatus.CREATED);
     }
 
     @PutMapping("/coffee/{id}")
@@ -44,8 +62,9 @@ public class CoffeeController {
 
 
     @DeleteMapping("coffee/{id}")
-    public void deleteCoffee(@PathVariable Long id) {
-       repository.deleteById(id);
+    public ResponseEntity<?> deleteCoffee(@PathVariable Long id) {
+        repository.deleteById(id);
+        return ResponseEntity.ok().body(HttpStatus.OK);
     }
 }
 
